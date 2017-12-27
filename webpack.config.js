@@ -42,14 +42,29 @@ module.exports = {
   module: {
     loaders: [
       {
+        test: /\.css$/,
+        use: extractSass.extract({
+          use: [
+            { loader: 'css-loader', options: { sourceMap: !prod } },
+            { loader: 'resolve-url-loader', options: { keepQuery: true } }
+          ],
+          fallback: 'style-loader',
+        }),
+      },
+      {
         test: /\.scss$/,
         use: extractSass.extract({
           use: [
             { loader: 'css-loader', options: { sourceMap: !prod } },
+            { loader: 'resolve-url-loader', options: { keepQuery: true } },
             { loader: 'sass-loader', options: { sourceMap: !prod } },
           ],
           fallback: 'style-loader',
         }),
+      },
+      {
+        test: /\.js$/,
+        loader: 'ify-loader'
       },
       {
         test: /\.jsx?$/,
@@ -63,6 +78,10 @@ module.exports = {
           'file-loader',
         ],
       },
+      {
+        test: /\.(ttf|eot|svg|woff(2)?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "url-loader?limit=80000"
+      }
     ],
   },
   resolve: {
