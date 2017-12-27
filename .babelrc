@@ -1,0 +1,13 @@
+{
+  "presets": ["es2015", "stage-3"],
+  "env": {
+    "node": {
+      "presets": ["es2015", "stage-3", ["latest-node", { "target": "8" }]],
+      "plugins": [
+        ["transform-runtime", { "polyfill": false, "regenerator": true }],
+        ["inline-json-import"],
+        ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]
+      ]
+    }
+  }
+}
