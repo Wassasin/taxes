@@ -11,7 +11,7 @@ root.appendChild(canvas);
 const xAxis = {
   min: 10000,
   max: 50000,
-  steps: 500,
+  steps: 200,
 };
 
 // Alles voor 2017
@@ -58,29 +58,61 @@ const computeZorgtoeslag = (hi) => {
   const standaardpremie = 1530; // https://download.belastingdienst.nl/toeslagen/docs/berekening_zorgtoeslag_2017_tg0821z71fd.pdf
   const normpremie = Math.max(0.02305 * drempelinkomen + 0.1346 * (hi - drempelinkomen), 0);
 
-  return standaardpremie - normpremie;
+  return Math.max(standaardpremie - normpremie, 0);
 };
 
-const data = _map(_range(xAxis.min, xAxis.max, xAxis.steps), hi => {
+const generateSeries = f => _map(_range(xAxis.min, xAxis.max, xAxis.steps), x => {
+  return {
+    x: x,
+    y: f(x),
+  };
+});
+
+const nettoData = generateSeries(hi => {
   let ni = hi;
 
   ni += computeHuurtoeslag(hi, 700);
   ni += computeZorgtoeslag(hi);
 
-  return {
-    x: hi,
-    y: ni
-  };
+  return ni;
 });
+
+const invisible = 'rgba(0, 0, 0, 0)';
 
 const ctx = canvas.getContext('2d');
 const chart = new Chart(ctx, {
   type: 'line',
   data: {
-    datasets: [ {
-      label: 'Netto bestedingsvermogen',
-      data: data,
-    } ]
+    datasets: [
+      {
+        borderColor: '#FF0000',
+        backgroundColor: '#FF0000',
+        fill: false,
+        label: 'Netto bestedingsvermogen',
+        data: nettoData,
+      },
+      {
+        borderColor: '#00FF00',
+        backgroundColor: '#00FF00',
+        fill: false,
+        label: 'Huurtoeslag',
+        data: generateSeries(hi => computeHuurtoeslag(hi, 700)),
+      },
+      {
+        borderColor: '#0000FF',
+        backgroundColor: '#0000FF',
+        fill: false,
+        label: 'Zorgtoeslag',
+        data: generateSeries(hi => computeZorgtoeslag(hi)),
+      },
+      {
+        borderColor: '#555555',
+        backgroundColor: '#555555',
+        fill: false,
+        label: 'Heffingsloon',
+        data: generateSeries(hi => hi),
+      },
+    ]
   },
   options: {
     maintainAspectRatio: false,
