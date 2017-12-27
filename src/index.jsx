@@ -4,10 +4,6 @@ import Chart from 'chart.js';
 import _map from 'lodash/map';
 import _range from 'lodash/range';
 
-const root = document.getElementById("root");
-const canvas = document.createElement("canvas");
-root.appendChild(canvas);
-
 const xAxis = {
   min: 0,
   max: 60000,
@@ -114,14 +110,7 @@ const computeArbeidskorting = (hi) => {
   return 0;
 };
 
-const generateSeries = f => _map(_range(xAxis.min, xAxis.max, xAxis.steps), x => {
-  return {
-    x: x,
-    y: f(x),
-  };
-});
-
-const nettoData = generateSeries(hi => {
+const computeNetto = hi => {
   let ni = hi;
 
   ni += computeHuurtoeslag(hi, 700);
@@ -131,6 +120,26 @@ const nettoData = generateSeries(hi => {
   ni -= computeInkomstenbelasting(hi);
 
   return ni;
+};
+
+const generateSeries = f => _map(_range(xAxis.min, xAxis.max, xAxis.steps), x => {
+  return {
+    x: x,
+    y: f(x),
+  };
+});
+
+const generateDeltaSeries = f => _map(_range(xAxis.min, xAxis.max, xAxis.steps), x => {
+  let sum = 0;
+
+  for(let i = -50; i < 50; i+=10) {
+    sum += f(x+i) - f(x+i-100);
+  }
+
+  return {
+    x: x,
+    y: sum / 10,
+  };
 });
 
 const invisible = 'rgba(0, 0, 0, 0)';
@@ -144,58 +153,110 @@ const createDataset = ({color, ...props}) => ({
   fill: false,
 });
 
-const ctx = canvas.getContext('2d');
-const chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    datasets: [
-      createDataset({
-        color: '#FF0000',
-        label: 'Netto bestedingsvermogen',
-        data: nettoData,
-      }),
-      createDataset({
-        color: '#00FF00',
-        label: 'Huurtoeslag',
-        data: generateSeries(hi => computeHuurtoeslag(hi, 700)),
-      }),
-      createDataset({
-        color: '#0000FF',
-        label: 'Zorgtoeslag',
-        data: generateSeries(computeZorgtoeslag),
-      }),
-      createDataset({
-        color: '#FFFF00',
-        label: 'Inkomstenbelasting',
-        data: generateSeries(computeInkomstenbelasting),
-      }),
-      createDataset({
-        color: '#FF00FF',
-        label: 'Heffingskorting',
-        data: generateSeries(computeHeffingskorting),
-      }),
-      createDataset({
-        color: '#00FFFF',
-        label: 'Arbeidskorting',
-        data: generateSeries(computeArbeidskorting),
-      }),
-      createDataset({
-        color: '#555555',
-        label: 'Heffingsloon',
-        data: generateSeries(hi => hi),
-      }),
-    ]
-  },
-  options: {
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [ {
-        type: 'linear',
-        ticks: {
-          min: xAxis.min,
-          max: xAxis.max,
-        }
-      } ]
+const root = document.getElementById("root");
+
+{
+  const incomeContainer = document.createElement("div");
+  incomeContainer.id = 'income';
+  root.appendChild(incomeContainer);
+
+  const canvas = document.createElement("canvas");
+  incomeContainer.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [
+        createDataset({
+          color: '#F44336',
+          label: 'Netto bestedingsvermogen',
+          data: generateSeries(computeNetto),
+        }),
+        createDataset({
+          color: '#2196F3',
+          label: 'Huurtoeslag',
+          data: generateSeries(hi => computeHuurtoeslag(hi, 700)),
+        }),
+        createDataset({
+          color: '#4CAF50',
+          label: 'Zorgtoeslag',
+          data: generateSeries(computeZorgtoeslag),
+        }),
+        createDataset({
+          color: '#FFEB3B',
+          label: 'Inkomstenbelasting',
+          data: generateSeries(computeInkomstenbelasting),
+        }),
+        createDataset({
+          color: '#FF5722',
+          label: 'Heffingskorting',
+          data: generateSeries(computeHeffingskorting),
+        }),
+        createDataset({
+          color: '#795548',
+          label: 'Arbeidskorting',
+          data: generateSeries(computeArbeidskorting),
+        }),
+        createDataset({
+          color: '#9E9E9E',
+          label: 'Heffingsloon',
+          data: generateSeries(hi => hi),
+        }),
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        xAxes: [ {
+          type: 'linear',
+          ticks: {
+            min: xAxis.min,
+            max: xAxis.max,
+          }
+        } ]
+      },
+      animation: {
+        duration: 0
+      },
+      hover: {
+        animationDuration: 0,
+      }
     }
-  }
-});
+  });
+}
+
+{
+  const deltaContainer = document.createElement("div");
+  deltaContainer.id = 'delta';
+  root.appendChild(deltaContainer);
+
+  const canvas = document.createElement("canvas");
+  deltaContainer.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [
+        createDataset({
+          color: '#03A9F4',
+          label: 'Delta netto bestedingsvermogen',
+          data: generateDeltaSeries(computeNetto),
+        }),
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        xAxes: [ {
+          type: 'linear',
+          ticks: {
+            min: xAxis.min,
+            max: xAxis.max,
+          }
+        } ]
+      }
+    }
+  });
+}
