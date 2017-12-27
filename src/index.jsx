@@ -14,10 +14,27 @@ const xAxis = {
   steps: 500,
 };
 
-const data = _map(_range(xAxis.min, xAxis.max, xAxis.steps), hv => {
+// Alles voor 2017
+
+const applyHuurtoeslag = (hv, huur) => {
+  // 23 jaar oud
+  // onder 710 euro huur
+
+  if (hv > 22200 || huur > 710.68 || huur < 223.42) {
+    return 0;
+  }
+
+  return Math.max(hv * -0.0135, -592.22) * 12;
+};
+
+const data = _map(_range(xAxis.min, xAxis.max, xAxis.steps), hi => {
+  let ni = hi;
+
+  ni = ni - applyHuurtoeslag(hi, 700);
+
   return {
-    x: hv,
-    y: hv
+    x: hi,
+    y: ni
   };
 });
 
