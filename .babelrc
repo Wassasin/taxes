@@ -2,7 +2,17 @@
   "presets": ["react", "es2015", "stage-3"],
   "env": {
     "node": {
-      "presets": ["react", "es2015", "stage-3", ["latest-node", { "target": "8" }]],
+      "presets": ["react", "es2015", "stage-3", [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions"
+            ]
+          },
+          "modules": false
+        }
+      ]],
       "plugins": [
         ["transform-runtime", { "polyfill": false, "regenerator": true }],
         ["inline-json-import"],

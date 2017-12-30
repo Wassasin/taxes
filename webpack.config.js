@@ -1,91 +1,69 @@
-const { join } = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const LiveReloadPlugin = require('webpack-livereload-plugin');
+const path = require('path');
 const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const prod = process.env.NODE_ENV === 'production';
-const dest = join(__dirname, 'public');
+const isProduction = process.env.NODE_ENV === 'production';
+const outputPath = path.resolve(__dirname, 'public/');
+const sourcePath = path.resolve(__dirname, 'src');
+const publicPath = ''; // relative to index
 
-const extractSass = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css',
-});
+const styleLoader = {
+  fallback: 'style-loader',
+  use: [
+    { loader: 'css-loader', options: { sourceMap: !isProduction } },
+    { loader: 'postcss-loader', options: { ident: 'postcss', plugins: [autoprefixer()], sourceMap: !isProduction } },
+    { loader: 'resolve-url-loader'},
+    { loader: 'sass-loader', options: { outputStyle: 'compressed', sourceMap: true } },
+  ],
+};
 
-const html = new HTMLWebpackPlugin({
-  template: join(__dirname, 'src/index.html'),
-});
-
-const define = new webpack.DefinePlugin({
-  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-});
-
-const clean = new CleanWebpackPlugin([
-  'public/*.js',
-  'public/*.html',
-  'public/*.jpg',
-  'public/*.svg',
-  'public/*.png',
-  'public/*.css',
-]);
-
-const reload = new LiveReloadPlugin();
+const entries = ['babel-polyfill'];
 
 module.exports = {
-  entry: './src/index.jsx',
+  entry: [
+    ...entries,
+    './src/index.jsx',
+  ],
   output: {
-    path: dest,
-    filename: 'index.[hash].js',
-    publicPath: '/',
+    filename: '[name].[hash].js',
+    publicPath,
+    path: outputPath,
   },
-  devtool: prod ? '' : 'eval-source-map',
+  devtool: isProduction ? '' : 'eval',
   module: {
     loaders: [
-      {
-        test: /\.css$/,
-        use: extractSass.extract({
-          use: [
-            { loader: 'css-loader', options: { sourceMap: !prod } },
-            { loader: 'resolve-url-loader', options: { keepQuery: true } }
-          ],
-          fallback: 'style-loader',
-        }),
-      },
-      {
-        test: /\.scss$/,
-        use: extractSass.extract({
-          use: [
-            { loader: 'css-loader', options: { sourceMap: !prod } },
-            { loader: 'resolve-url-loader', options: { keepQuery: true } },
-            { loader: 'sass-loader', options: { sourceMap: !prod } },
-          ],
-          fallback: 'style-loader',
-        }),
-      },
-      {
-        test: /\.js$/,
-        loader: 'ify-loader'
-      },
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        include: join(__dirname, 'src'),
+        include: sourcePath,
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: [
-          'file-loader',
-        ],
+        test: /\.(scss|css)$/,
+        loader: ExtractTextPlugin.extract(styleLoader)
       },
       {
-        test: /\.(ttf|eot|svg|woff(2)?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=80000"
-      }
+        test: /\.(jpg|jpeg|gif|png|ico|svg|eot|woff|woff2|ttf)$/,
+        loader: 'file-loader?name=[name].[hash].[ext]',
+      },
     ],
   },
   resolve: {
     extensions: ['.js', '.jsx'],
   },
-  plugins: [extractSass, html, clean, reload, define],
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
+    }),
+    new HTMLWebpackPlugin({
+      template: path.join(__dirname, 'src/index.html'),
+    }),
+    new ExtractTextPlugin('[name].[hash].css'),
+    new ManifestPlugin({ publicPath }),
+    new CleanWebpackPlugin([outputPath], { watch: isProduction }),
+  ],
 };
