@@ -2,6 +2,7 @@ import React from 'react';
 
 import IncomeGraph from './income-graph';
 import DeltaGraph from './delta-graph';
+import PercentageGraph from './percentage-graph';
 
 export default () => <div>
   <div className="section" id="intro">
@@ -41,6 +42,13 @@ export default () => <div>
       <h2>Inkomenstoename</h2>
       <div id="delta">
         <DeltaGraph/>
+      </div>
+    </div>
+
+    <div className="container">
+      <h2>Procentueel</h2>
+      <div id="percentage">
+        <PercentageGraph/>
       </div>
     </div>
   </div>
