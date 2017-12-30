@@ -2,8 +2,8 @@ import _map from 'lodash/map';
 import _range from 'lodash/range';
 
 export const xAxis = {
-  min: 0,
-  max: 60000,
+  min: 12000,
+  max: 100000,
   steps: 250,
 };
 
