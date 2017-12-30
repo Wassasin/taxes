@@ -14,16 +14,6 @@ html, body, canvas, #root {
   }
 }
 
-div#income {
-  height: 70%;
-  width: 100%;
-}
-
-div#delta {
-  height: 30%;
-  width: 100%;
-}
-
-.js-plotly-plot {
-  width: 100%;
+.c3-axis .tick line {
+  display: none;
 }

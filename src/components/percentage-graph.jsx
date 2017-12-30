@@ -27,4 +27,5 @@ export default () => <C3Chart
       }
     }
   }}
+  point={{show: false}}
 />;

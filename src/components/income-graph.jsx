@@ -32,4 +32,5 @@ axis={{
     }
   }
 }}
+point={{show: false}}
 />;
