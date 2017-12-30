@@ -1,24 +1,13 @@
-import _map from 'lodash/map';
-import _range from 'lodash/range';
-
 import React from 'react';
 import Plot from 'react-plotly.js'
 
-import * as taxes from './taxes2017';
+import * as taxes from '../taxes2017';
+import * as ranges from "../ranges";
 
 const defaultConfig = {
   showLink: false,
   displayModeBar: false
 };
-
-const xAxis = {
-  min: 0,
-  max: 60000,
-  steps: 250,
-};
-
-const xRange = _range(xAxis.min, xAxis.max, xAxis.steps);
-const yRange = f => _map(xRange, f);
 
 export default () => <Plot
   layout={{
@@ -29,38 +18,38 @@ export default () => <Plot
     {
       type: 'line',
       name: 'Netto bestedingsvermogen',
-      x: xRange,
-      y: yRange(taxes.computeNetto),
+      x: ranges.xRange,
+      y: ranges.yRange(taxes.computeNetto),
     },
     {
       type: 'line',
       name: 'Huurtoeslag',
-      x: xRange,
-      y: yRange(hi => taxes.computeHuurtoeslag(hi, 700)),
+      x: ranges.xRange,
+      y: ranges.yRange(hi => taxes.computeHuurtoeslag(hi, 700)),
     },
     {
       type: 'line',
       name: 'Zorgtoeslag',
-      x: xRange,
-      y: yRange(taxes.computeZorgtoeslag),
+      x: ranges.xRange,
+      y: ranges.yRange(taxes.computeZorgtoeslag),
     },
     {
       type: 'line',
       name: 'Inkomstenbelasting',
-      x: xRange,
-      y: yRange(taxes.computeInkomstenbelasting),
+      x: ranges.xRange,
+      y: ranges.yRange(taxes.computeInkomstenbelasting),
     },
     {
       type: 'line',
       name: 'Arbeidskorting',
-      x: xRange,
-      y: yRange(taxes.computeArbeidskorting),
+      x: ranges.xRange,
+      y: ranges.yRange(taxes.computeArbeidskorting),
     },
     {
       type: 'line',
       name: 'Heffingskorting',
-      x: xRange,
-      y: yRange(taxes.computeHeffingskorting),
+      x: ranges.xRange,
+      y: ranges.yRange(taxes.computeHeffingskorting),
     },
   ]}
   config={defaultConfig}
