@@ -23,7 +23,7 @@ export default () => <C3Chart
     },
     y: {
       tick: {
-        format: y => '€'+d3format('.2f')(y)+' / €100'
+        format: y => '€'+d3format('.2f')(y*100)+' / €100'
       }
     }
   }}
