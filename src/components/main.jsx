@@ -3,6 +3,7 @@ import React from 'react';
 import IncomeGraph from './income-graph';
 import DeltaGraph from './delta-graph';
 import PercentageGraph from './percentage-graph';
+import PopulationGraph from './population-graph';
 
 export default () => <div>
   <div className="section" id="intro">
@@ -49,6 +50,13 @@ export default () => <div>
       <h2>Procentueel</h2>
       <div id="percentage">
         <PercentageGraph/>
+      </div>
+    </div>
+
+    <div className="container">
+      <h2>Populatie</h2>
+      <div id="population">
+        <PopulationGraph />
       </div>
     </div>
   </div>

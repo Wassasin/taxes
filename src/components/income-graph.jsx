@@ -33,4 +33,5 @@ axis={{
   }
 }}
 point={{show: false}}
+zoom={{enabled : true}}
 />;

@@ -4,7 +4,7 @@ import _range from 'lodash/range';
 export const xAxis = {
   min: 12000,
   max: 40000,
-  steps: 250,
+  steps: 100,
 };
 
 export const xRange = _range(xAxis.min, xAxis.max, xAxis.steps);
