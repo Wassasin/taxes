@@ -4,7 +4,7 @@ import {format as d3format} from 'd3-format';
 
 import 'c3/c3.css';
 
-import * as taxes from "../taxes2017";
+import * as taxes from "../taxes2018";
 import * as ranges from "../ranges";
 
 export default () => <C3Chart

@@ -32,7 +32,7 @@ export default () => <div>
   </div>
   <div className="section">
     <div className="container">
-      <h2>Belastingen en kortingen 2017</h2>
+      <h2>Belastingen en kortingen 2018</h2>
 
       <div id="income">
         <IncomeGraph/>
